@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>6组随机号码｜组内排序去重｜按出现组数统计(0‑6次)</title>
+    <style>
+        *{box-sizing: border-box;font-family:Microsoft Yahei;}
+        body{max-width:1100px;margin:20px auto;padding:0 20px;background:#f4f7fa;}
+        /* 两栏三行布局：123左列，456右列 */
+        .grid-2col{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap:16px;
+        }
+        .col-item{
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+        label{display:block;margin-bottom:4px;font-weight:bold;}
+        textarea{width:100%;height:72px;padding:8px;font-size:15px;border:1px solid #bbb;border-radius:6px;resize:none;}
+        .out-wrap{position:relative;}
+        .out-text{background:#eef4fc;padding:8px;border-radius:5px;min-height:40px;margin-top:4px;white-space:pre-wrap;}
+        .copy-btn{
+            position:absolute;
+            right:6px;
+            top:6px;
+            font-size:12px;
+            padding:2px 6px;
+            background:#4472c4;
+            color:#fff;
+            border:none;
+            border-radius:3px;
+            cursor:pointer;
+        }
+        .count-box{
+            display:inline-block;
+            background:#fff2cc;
+            padding:2px 8px;
+            border-radius:4px;
+            font-size:13px;
+            margin-left:8px;
+        }
+        .stat-count-footer{
+            margin-top:10px;
+            background:#e8f0fc;
+            padding:8px;
+            border-radius:5px;
+        }
+        .btn-group{margin:22px 0;display:flex;gap:12px;flex-wrap:wrap;}
+        button{padding:10px 20px;font-size:16px;border:none;border-radius:6px;cursor:pointer;color:#fff;}
+        .btn-sort{background:#2b7bdd;}
+        .btn-stat{background:#23a958;}
+        .btn-clear{background:#dd4444;}
+        .box{background:#fff;padding:18px;border-radius:8px;margin:14px 0;box-shadow:0 1px 4px #00000018;}
+        table{border-collapse:collapse;width:100%;margin-top:10px;}
+        td,th{border:1px solid #ccc;padding:9px;text-align:center;}
+        th{background:#e8f0fc;}
+    </style>
+</head>
+<body>
+<h2>六组随机号码｜组内排序去重｜按出现组数统计(6‑0次)</h2>
+<p>号码输出格式：01,02,03…；使用英文逗号,分隔；0次定义：1‑49范围内，所有六组都没有出现过的号码</p>
+
+<div class="box">
+    <div class="grid-2col">
+        <!-- 左栏：1、2、3组 -->
+        <div class="col-item">
+            <div>
+                <label>第1组号码输入</label>
+                <textarea id="i1" placeholder="支持数字，自动转为01,02格式"></textarea>
+                <div class="out-wrap">
+                    <div>本组排序去重后：
+                        <span class="count-box">数量：<span id="c1">0</span></span>
+                        <button class="copy-btn" onclick="copyOutput('o1')">复制</button>
+                    </div>
+                    <div class="out-text" id="o1"></div>
+                </div>
+            </div>
+            <div>
+                <label>第2组号码输入</label>
+                <textarea id="i2"></textarea>
+                <div class="out-wrap">
+                    <div>本组排序去重后：
+                        <span class="count-box">数量：<span id="c2">0</span></span>
+                        <button class="copy-btn" onclick="copyOutput('o2')">复制</button>
+                    </div>
+                    <div class="out-text" id="o2"></div>
+                </div>
+            </div>
+            <div>
+                <label>第3组号码输入</label>
+                <textarea id="i3"></textarea>
+                <div class="out-wrap">
+                    <div>本组排序去重后：
+                        <span class="count-box">数量：<span id="c3">0</span></span>
+                        <button class="copy-btn" onclick="copyOutput('o3')">复制</button>
+                    </div>
+                    <div class="out-text" id="o3"></div>
+                </div>
+            </div>
+        </div>
+        <!-- 右栏：4、5、6组 -->
+        <div class="col-item">
+            <div>
+                <label>第4组号码输入</label>
+                <textarea id="i4"></textarea>
+                <div class="out-wrap">
+                    <div>本组排序去重后：
+                        <span class="count-box">数量：<span id="c4">0</span></span>
+                        <button class="copy-btn" onclick="copyOutput('o4')">复制</button>
+                    </div>
+                    <div class="out-text" id="o4"></div>
+                </div>
+            </div>
+            <div>
+                <label>第5组号码输入</label>
+                <textarea id="i5"></textarea>
+                <div class="out-wrap">
+                    <div>本组排序去重后：
+                        <span class="count-box">数量：<span id="c5">0</span></span>
+                        <button class="copy-btn" onclick="copyOutput('o5')">复制</button>
+                    </div>
+                    <div class="out-text" id="o5"></div>
+                </div>
+            </div>
+            <div>
+                <label>第6组号码输入</label>
+                <textarea id="i6"></textarea>
+                <div class="out-wrap">
+                    <div>本组排序去重后：
+                        <span class="count-box">数量：<span id="c6">0</span></span>
+                        <button class="copy-btn" onclick="copyOutput('o6')">复制</button>
+                    </div>
+                    <div class="out-text" id="o6"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="btn-group">
+    <button class="btn-sort" onclick="groupSortDistinct()">🔢一键六组分别【排序+组内去重】</button>
+    <button class="btn-stat" onclick="statByGroupCount()">📊按跨组出现次数统计(6次→0次)</button>
+    <button class="btn-clear" onclick="clearAll()">🗑全部清空</button>
+</div>
+
+<div class="box">
+    <h4>统计结果：按号码出现在多少个组内划分（6组～0组）<br/>0组 = 1‑49中六组全部都未出现的号码</h4>
+    <div id="statOut"></div>
+    <div class="stat-count-footer" id="statFooter"></div>
+</div>
+
+<script>
+const inputIds = ["i1","i2","i3","i4","i5","i6"];
+const outputIds = ["o1","o2","o3","o4","o5","o6"];
+const countIds  = ["c1","c2","c3","c4","c5","c6"];
+
+//复制对应输出框文本
+async function copyOutput(outId){
+    const text = document.getElementById(outId).innerText;
+    if(!text){
+        alert("暂无数据，请先执行排序去重！");
+        return;
+    }
+    try{
+        await navigator.clipboard.writeText(text);
+        alert("已复制："+text);
+    }catch(err){
+        //兼容旧浏览器
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        alert("已复制："+text);
+    }
+}
+
+// 数字转两位字符串：1→"01"，12→"12"
+function twoDigit(n){
+    return String(n).padStart(2,'0');
+}
+
+//解析文本得到数字数组，兼容空格、中文逗号、英文逗号
+function parseOne(text){
+    const arr = text.replace(/[,，\n\r]/g," ").split(/\s+/);
+    let nums = [];
+    for(let s of arr){
+        let n = parseFloat(s.trim());
+        if(!isNaN(n)) nums.push(n);
+    }
+    return nums;
+}
+
+//每组内部：解析 → 升序排序 → 组内去重 → 转为两位格式，英文逗号,分隔输出，同时更新本组数量
+function groupSortDistinct(){
+    for(let idx=0;idx<6;idx++){
+        let raw = document.getElementById(inputIds[idx]).value;
+        let arr = parseOne(raw);
+        let set = [...new Set(arr)];
+        set.sort((a,b)=>a-b);
+        //转为01,02,03格式，英文逗号分隔
+        let formatted = set.map(x=>twoDigit(x)).join(",");
+        document.getElementById(outputIds[idx]).innerText = formatted;
+        //更新本组去重之后号码总数
+        document.getElementById(countIds[idx]).innerText = set.length;
+    }
+}
+
+//读取6组已经【组内去重后】的数据，统计号码一共出现在多少个组里面
+function statByGroupCount(){
+    let numToGroups = {};
+    for(let gIdx=0;gIdx<6;gIdx++){
+        let text = document.getElementById(outputIds[gIdx]).innerText;
+        let groupNums = parseOne(text);
+        let uniqueInGroup = [...new Set(groupNums)];
+        for(let num of uniqueInGroup){
+        if(!numToGroups[num]) numToGroups[num] = new Set();
+            numToGroups[num].add(gIdx);
+        }
+    }
+
+    let buckets = [[],[],[],[],[],[],[]];
+    for(let numStr in numToGroups){
+        let num = Number(numStr);
+        let cnt = numToGroups[num].size;
+        buckets[cnt].push(num);
+    }
+
+    //0次 = 1‑49范围里，完全没有在任何一组出现的数字
+    let zeroList = [];
+    for(let n=1;n<=49;n++){
+        if(!numToGroups.hasOwnProperty(n)){
+            zeroList.push(n);
+        }
+    }
+    buckets[0] = zeroList;
+
+    //每个桶内部号码升序，输出两位格式，英文逗号分隔
+    for(let i=0;i<=6;i++){
+        buckets[i].sort((a,b)=>a-b);
+    }
+
+    let html = `<table>
+    <tr><th>出现在多少组</th><th>对应号码列表</th></tr>`;
+    for(let c=6;c>=0;c--){
+        let listText = buckets[c].length>0 ? buckets[c].map(x=>twoDigit(x)).join(",") : "无";
+        html += `<tr><td>${c} 组</td><td>${listText}</td></tr>`;
+    }
+    html += `</table>`;
+    document.getElementById("statOut").innerHTML = html;
+
+    //底部计数：分别显示6组、5组、4组、3组、2组、1组、0组的号码数量
+    let footerHtml = "";
+    for(let c=6;c>=0;c--){
+        footerHtml += `${c}组:${buckets[c].length}个&nbsp;&nbsp;`;
+    }
+    footerHtml += `<br/><strong>合计(1‑49全部号码):49个</strong>`;
+    document.getElementById("statFooter").innerHTML = footerHtml;
+}
+
+function clearAll(){
+    for(let i=0;i<6;i++){
+        document.getElementById(inputIds[i]).value = "";
+        document.getElementById(outputIds[i]).innerText = "";
+        document.getElementById(countIds[i]).innerText = "0";
+    }
+    document.getElementById("statOut").innerHTML = "";
+    document.getElementById("statFooter").innerHTML = "";
+}
+</script>
+</body>
+</html>
